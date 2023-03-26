@@ -1,35 +1,20 @@
-import { GraphQLError, GraphQLNonNull, GraphQLString } from 'graphql';
-import joi from 'joi';
+import { GraphQLError, GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLString } from 'graphql';
 
 import apiWrapper from 'crud/apiWrapper';
-import create from 'crud/create';
-import User, { Role } from 'models/user.model';
-import RefreshToken from 'models/refreshToken.model';
+import { User, roles, Role, UserDocument } from 'models/user.model';
+import { RefreshToken } from 'models/refreshToken.model';
 import { AuthType } from 'types/auth.type';
 import { generateTokenResponse, getAgent } from 'utils/authHelpers';
+import { GraphQLDate } from 'graphql-scalars';
+import { createBaseUser, createProfessor, createStudent } from 'services/user.service';
 
-const refreshSchema = {
-  refreshToken: joi.string().required(),
-};
-
-const loginSchema = {
-  email: joi.string().email({ minDomainSegments: 2 }).required(),
-  password: joi.string().required().min(6).max(128),
-};
-
-const registerSchema = {
-  email: joi.string().email().required(),
-  password: joi.string().min(6).max(30).required(),
-  firstName: joi.string().min(1).max(30).required(),
-  lastName: joi.string().min(1).max(30).required(),
-};
 
 export default {
   login: apiWrapper(
     async (args, req) => {
       const user = await User.findOne({ email: args.email });
       if (!user || !(await user.passwordMatches(args.password)))
-        throw new GraphQLError('Email et mot de passe ne correspondent pas');
+        throw new GraphQLError('Invalid credentials');
 
       const token = await generateTokenResponse(user, req);
 
@@ -40,31 +25,52 @@ export default {
       email: { type: new GraphQLNonNull(GraphQLString) },
       password: { type: new GraphQLNonNull(GraphQLString) },
     },
-    { validateSchema: loginSchema },
+    {},
   ),
-  register: create(
-    User,
-    {
-      email: { type: GraphQLString, required: true },
-      password: { type: GraphQLString, required: true },
-      firstName: { type: GraphQLString, required: true },
-      lastName: { type: GraphQLString, required: true },
+  register: apiWrapper(
+    async (args, req) => {
+      const { role, firstName, lastName, password, telephone, birthday, address, gender, image, motherFullName, fatherFullName, fatherJob, motherJob, diploma, hourlyPrice, hoursNbr } = args;
+      let user: UserDocument = new User();
+
+      if (!(roles.includes(role))) {
+        throw new GraphQLError('This role is invalid');
+      }
+
+      const baseUser = createBaseUser({ role, firstName, lastName, password, telephone, birthday, address, gender, image });
+
+      if (role === Role.STUDENT) {
+        user = await createStudent(baseUser, { motherFullName, fatherFullName, fatherJob, motherJob });
+      }
+      if (role === Role.PROF) {
+        user = await createProfessor(baseUser, { diploma, hourlyPrice, hoursNbr });
+      }
+
+      const token = await generateTokenResponse(user, req);
+      return { user, token };
+
     },
     AuthType,
     {
-      validateSchema: registerSchema,
-      pre: async (args) => {
-        const { email, ...rest } = args;
-        if (email) {
-          const existEmail = await User.findOne({ email });
-          if (existEmail) throw new GraphQLError('Email existe déjà');
-        }
-        return { ...rest, email };
-      },
-      post: async ({ result: user, request }) => {
-        const token = await generateTokenResponse(user, request);
-        return { user, token };
-      },
+      email: { type: GraphQLString, required: true },
+      firstName: { type: GraphQLString, required: true },
+      lastName: { type: GraphQLString, required: true },
+      role: { type: GraphQLString, required: true },
+      password: { type: GraphQLString, required: true },
+      telephone: { type: GraphQLString, required: true },
+      birthday: { type: GraphQLDate, required: true },
+      gender: { type: GraphQLString, required: true },
+      address: { type: GraphQLString, required: true },
+      image: { type: GraphQLString, required: true },
+
+      fatherFullName: { type: GraphQLString, required: false },
+      motherFullName: { type: GraphQLString, required: false },
+      fatherJob: { type: GraphQLString, required: false },
+      motherJob: { type: GraphQLString, required: false },
+      hourlyPrice: { type: GraphQLFloat, required: false },
+      hoursNbr: { type: GraphQLInt, required: false },
+      diploma: { type: GraphQLString, required: false },
+
+
     },
   ),
   refresh: apiWrapper(
@@ -83,9 +89,7 @@ export default {
     {
       refreshToken: { type: new GraphQLNonNull(GraphQLString) },
     },
-    {
-      validateSchema: refreshSchema,
-    },
+    {},
   ),
   logout: apiWrapper(
     async (args, req) => {
@@ -98,6 +102,5 @@ export default {
     },
     GraphQLString,
     {},
-    { authorizationRoles: [Role.USER, Role.ADMIN] },
   ),
 };

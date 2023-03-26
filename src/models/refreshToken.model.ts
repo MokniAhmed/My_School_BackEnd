@@ -12,7 +12,7 @@ export interface RefreshToken {
   agent: string;
 }
 
-export interface RefreshTokenDocument extends Document, RefreshToken {}
+export interface RefreshTokenDocument extends Document, RefreshToken { }
 
 export interface IRefreshTokenModel extends Model<RefreshTokenDocument> {
   generate: (
@@ -21,10 +21,6 @@ export interface IRefreshTokenModel extends Model<RefreshTokenDocument> {
   ) => Promise<RefreshTokenDocument>;
 }
 
-/**
- * Refresh Token Schema
- * @private
- */
 const refreshTokenSchema = new mongoose.Schema<
   RefreshTokenDocument,
   IRefreshTokenModel
@@ -62,4 +58,4 @@ refreshTokenSchema.statics = {
   },
 };
 
-export default mongoose.model('RefreshToken', refreshTokenSchema);
+export const RefreshToken = mongoose.model<RefreshTokenDocument, IRefreshTokenModel>('RefreshToken', refreshTokenSchema);

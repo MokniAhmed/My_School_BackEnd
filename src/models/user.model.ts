@@ -1,26 +1,56 @@
-import mongoose, { Document, Model } from 'mongoose';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import moment from 'moment';
+import mongoose, { CallbackError, Document, Model, Schema } from "mongoose";
 
-import { env, expirationInterval, accessSecret } from 'config/vars';
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import moment from "moment";
+
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+//@ts-ignore
+import multer from "multer";
+
+import { env, expirationInterval, accessSecret } from "config/vars";
 
 export enum Role {
-  USER = 'user',
-  ADMIN = 'admin',
+  PROF = "professor",
+  STUDENT = "student",
+  ADMIN = "admin",
 }
 
-const roles = [Role.USER, Role.ADMIN];
+export const roles = [Role.PROF, Role.STUDENT, Role.ADMIN];
 
-export interface User {
-  email: string;
-  password: string;
+interface IBaseUserData {
   firstName: string;
   lastName: string;
+  email: string;
+  telephone: string;
+  birthday: Date;
+  gender: string;
+  address: string;
+  password: string;
   role: Role;
+  image?: string;
 }
 
-export interface UserDocument extends Document, User {
+interface IBaseUser extends Document, IBaseUserData {}
+
+interface IStudentData {
+  fatherFullName: string;
+  motherFullName: string;
+  fatherJob: string;
+  motherJob: string;
+}
+
+interface IStudent extends IBaseUser, IStudentData {}
+
+interface IProfessorData {
+  hourlyPrice: number;
+  hoursNbr: number;
+  diploma: string;
+}
+
+interface IProfessor extends IBaseUser, IProfessorData {}
+export interface UserDocument extends Document, IStudent, IProfessor {
   generateToken: () => { token: string; expiresIn: string };
   passwordMatches: (password: string) => Promise<boolean>;
 }
@@ -29,90 +59,104 @@ export type UserModel = Model<UserDocument>;
 
 const userSchema = new mongoose.Schema<UserDocument, UserModel>(
   {
+    id: { type: Schema.Types.ObjectId, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    telephone: { type: String, required: true },
+    birthday: { type: Date, required: true },
+    gender: { type: String, required: true },
+    address: { type: String, required: true },
+    password: { type: String, required: true },
     role: {
       type: String,
       enum: roles,
-      default: 'user',
-    },
-    email: {
-      type: String,
-      match: /^\S+@\S+\.\S+$/,
-      trim: true,
-      lowercase: true,
-      unique: true,
       required: true,
     },
-    password: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-    firstName: {
-      type: String,
-      trim: true,
-      max: 30,
-      required: true,
-    },
-    lastName: {
-      type: String,
-      trim: true,
-      max: 30,
-      required: true,
-    },
+    fatherFullName: { type: String, default: null },
+    motherFullName: { type: String, default: null },
+    fatherJob: { type: String, default: null },
+    motherJob: { type: String, default: null },
+    hourlyPrice: { type: Number, default: null },
+    hoursNbr: { type: Number, default: null },
+    diploma: { type: String, default: null },
+    image: { type: String, default: null },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
-userSchema.virtual('skills', {
-  ref: 'Skill',
-  localField: '_id',
-  foreignField: 'user',
-});
-
-userSchema.virtual('volunteers', {
-  ref: 'Volunteer',
-  localField: '_id',
-  foreignField: 'user',
-});
-
 export async function hash(password: string) {
-  const rounds = env === 'test' ? 1 : 10;
+  const rounds = env === "test" ? 1 : 10;
   return await bcrypt.hash(password, rounds);
 }
 
-userSchema.pre('save', async function (next) {
+userSchema.pre("save", async function (next) {
   try {
-    if (!this.isModified('password')) return next();
+    if (!this.isModified("password")) return next();
     this.password = await hash(this.password);
     next();
-  } catch (e) {
-    return next(e);
+  } catch (e: unknown) {
+    return next(e as CallbackError | undefined);
   }
 });
 
 /**
  * Methods
  */
-userSchema.method({
-  generateToken() {
-    const payload = {
-      sub: this._id,
-    };
 
-    const expiresIn = moment().add(expirationInterval, 'minutes');
+userSchema.methods.generateToken = function () {
+  const payload = {
+    sub: this._id,
+  };
+  const expiresIn = moment().add(expirationInterval, "minutes");
 
-    const token = jwt.sign(payload, accessSecret, {
-      expiresIn: expiresIn.unix(),
-    });
-    // add lastLogin
-    return { token, expiresIn: expiresIn.toISOString() };
-  },
+  const token = jwt.sign(payload, accessSecret, {
+    expiresIn: expiresIn.unix(),
+  });
+  // add lastLogin
+  return { token, expiresIn: expiresIn.toISOString() };
+};
 
-  passwordMatches(password: string) {
-    return bcrypt.compare(password, this.password);
+userSchema.methods.passwordMatches = function (password: string) {
+  return bcrypt.compare(password, this.password);
+};
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  folder: "user-images",
+});
+
+const cloudinaryStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    public_id: () => `user-${Date.now()}`,
   },
 });
 
-export default mongoose.model('User', userSchema);
+const UserImageUploader = multer({ storage: cloudinaryStorage });
+//@ts-ignore
+userSchema.methods.uploadImage = async function (file: Express.Multer.File) {
+  const result = await cloudinary.uploader.upload(file.path, {
+    public_id: `user-${this._id}`,
+    overwrite: true,
+  });
+  this.image = result.public_id;
+  await this.save();
+};
+
+const User = mongoose.model("User", userSchema);
+
+export {
+  IBaseUser,
+  IBaseUserData,
+  IStudent,
+  IProfessor,
+  IStudentData,
+  IProfessorData,
+  User,
+  UserImageUploader,
+};

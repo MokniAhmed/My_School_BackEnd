@@ -1,7 +1,7 @@
 import Parser from 'ua-parser-js';
-
+//@ts-ignore
 import { UserDocument, Role } from 'models/user.model';
-import RefreshToken from 'models/refreshToken.model';
+import { RefreshToken } from "models/refreshToken.model";
 import { LocalRequest } from 'crud/apiWrapper';
 
 const privileges: { [K in Role]?: Role[] } = {};

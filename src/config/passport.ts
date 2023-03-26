@@ -1,6 +1,6 @@
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { accessSecret } from './vars';
-
+//@ts-ignore
 import User, { UserDocument } from 'models/user.model';
 
 const jwtOptions = {
@@ -14,6 +14,7 @@ const jwt = async (payload: { sub: string }, done: (e: Error | null, user: UserD
     if (user) return done(null, user);
     return done(null, false);
   } catch (error) {
+    //@ts-ignore
     return done(error, false);
   }
 };
