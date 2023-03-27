@@ -1,10 +1,14 @@
 import get from "crud/get";
 import list from "crud/list";
-// import Test from "models/test.model";
-// import { Role } from "models/user.model";
-// import { TestType } from "types/test.type";
+import { GraphQLID, GraphQLString } from "graphql";
+import { Role, User } from "models/user.model";
+import { UserType } from "types/user.type";
 
-// export default {
-//   tests: list(Test, TestType, { authorizationRoles: [Role.ADMIN] }),
-//   test: get(Test, TestType, { authorizationRoles: [Role.ADMIN] }),
-// };
+export default {
+  getUsers: list(User, UserType, {
+    args: {
+      role: { type: GraphQLString },
+    },
+  }),
+  getUser: get(User, UserType, { authorizationRoles: [] }),
+};

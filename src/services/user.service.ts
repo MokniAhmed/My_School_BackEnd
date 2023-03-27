@@ -7,28 +7,33 @@ import {
   UserDocument,
 } from "models/user.model";
 
-const emailGenerator = async (
+const emailGenerator = (
   firstName: string,
   lastName: string,
-  role: Role
+  role: Role,
+  telephone: string,
+  password: string
 ) => {
   const emailBase = `@myschool-${role}.tn`;
   let fullName = `${firstName}${lastName}`;
-  let email = `${fullName}${emailBase}`;
-  const emailExists = await User.findOne({ email });
-  if (emailExists) {
-    fullName = fullName + Math.floor(Math.random() * 10) + 1;
-    email = `${fullName}${emailBase}`;
-  }
+  let phone = `${telephone.slice(6)}`;
+  let email = `${fullName}${phone}${emailBase}`;
+  password = `${lastName}@${telephone}`;
 
-  return email;
+  // const emailExists = await User.findOne({ email });
+  // if (emailExists) {
+  //   fullName = fullName + Math.floor(Math.random() * 10) + 1;
+  //   email = `${fullName}${emailBase}`;
+  // }
+
+  return { email, password };
 };
 
 export const createBaseUser = (baseUser: Omit<IBaseUserData, "email">) => {
-  const { firstName, lastName, role } = baseUser;
-  const email = emailGenerator(firstName, lastName, role);
-  //@ts-ignore
-  const user = new User({ ...baseUser }, email);
+  const { firstName, lastName, telephone, role } = baseUser;
+  const { password, ...rest } = baseUser;
+  const login = emailGenerator(firstName, lastName, role, telephone, password);
+  const user = new User({ ...rest, ...login });
   return user;
 };
 
