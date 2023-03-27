@@ -23,6 +23,7 @@ interface IBaseUserData {
   firstName: string;
   lastName: string;
   email: string;
+  emailPer: string;
   telephone: string;
   birthday: Date;
   gender: string;
@@ -59,14 +60,15 @@ export type UserModel = Model<UserDocument>;
 
 const userSchema = new mongoose.Schema<UserDocument, UserModel>(
   {
-    id: { type: Schema.Types.ObjectId, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true },
+    emailPer: { type: String, required: true },
     telephone: { type: String, required: true },
     birthday: { type: Date, required: true },
     gender: { type: String, required: true },
     address: { type: String, required: true },
+    images: { type: String, default: null },
     password: { type: String, required: true },
     role: {
       type: String,
