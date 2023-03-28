@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLList, GraphQLString } from 'graphql';
 import ClassType from './class.type';
 
-const levelType: GraphQLObjectType = new GraphQLObjectType({
+const LevelType: GraphQLObjectType = new GraphQLObjectType({
   name: 'Level',
   fields: () => ({
     id: { type: GraphQLString },
@@ -13,4 +13,4 @@ const levelType: GraphQLObjectType = new GraphQLObjectType({
   })
 });
 
-export default levelType
+export default LevelType

@@ -58,7 +58,7 @@ export interface UserDocument extends Document, IStudent, IProfessor {
 
 export type UserModel = Model<UserDocument>;
 
-const userSchema = new mongoose.Schema<UserDocument, UserModel>(
+const UserSchema = new mongoose.Schema<UserDocument, UserModel>(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -94,7 +94,7 @@ export async function hash(password: string) {
   return await bcrypt.hash(password, rounds);
 }
 
-userSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function (next) {
   try {
     if (!this.isModified("password")) return next();
     this.password = await hash(this.password);
@@ -108,7 +108,7 @@ userSchema.pre("save", async function (next) {
  * Methods
  */
 
-userSchema.methods.generateToken = function () {
+UserSchema.methods.generateToken = function () {
   const payload = {
     sub: this._id,
   };
@@ -121,7 +121,7 @@ userSchema.methods.generateToken = function () {
   return { token, expiresIn: expiresIn.toISOString() };
 };
 
-userSchema.methods.passwordMatches = function (password: string) {
+UserSchema.methods.passwordMatches = function (password: string) {
   return bcrypt.compare(password, this.password);
 };
 
@@ -141,7 +141,7 @@ const cloudinaryStorage = new CloudinaryStorage({
 
 const UserImageUploader = multer({ storage: cloudinaryStorage });
 //@ts-ignore
-userSchema.methods.uploadImage = async function (file: Express.Multer.File) {
+UserSchema.methods.uploadImage = async function (file: Express.Multer.File) {
   const result = await cloudinary.uploader.upload(file.path, {
     public_id: `user-${this._id}`,
     overwrite: true,
@@ -150,7 +150,7 @@ userSchema.methods.uploadImage = async function (file: Express.Multer.File) {
   await this.save();
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", UserSchema);
 
 export {
   IBaseUser,

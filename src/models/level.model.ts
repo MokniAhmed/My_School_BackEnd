@@ -6,7 +6,7 @@ export interface ILevel extends Document {
   classes: mongoose.Types.ObjectId[];
 }
 
-const levelSchema: Schema = new Schema({
+const LevelSchema: Schema = new Schema({
   name: {
     type: String,
     required: true
@@ -25,4 +25,4 @@ const levelSchema: Schema = new Schema({
     }
   ]
 });
-export default mongoose.model<ILevel>('Level', levelSchema);
+export default mongoose.model<ILevel>('Level', LevelSchema);

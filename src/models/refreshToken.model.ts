@@ -21,7 +21,7 @@ export interface IRefreshTokenModel extends Model<RefreshTokenDocument> {
   ) => Promise<RefreshTokenDocument>;
 }
 
-const refreshTokenSchema = new mongoose.Schema<
+const RefreshTokenSchema = new mongoose.Schema<
   RefreshTokenDocument,
   IRefreshTokenModel
 >({
@@ -41,7 +41,7 @@ const refreshTokenSchema = new mongoose.Schema<
   expires: { type: Date },
 });
 
-refreshTokenSchema.statics = {
+RefreshTokenSchema.statics = {
   async generate(user: UserDocument, agent: string) {
     const userId = user._id;
     const token = `${userId}.${crypto.randomBytes(40).toString('hex')}`;
@@ -58,4 +58,4 @@ refreshTokenSchema.statics = {
   },
 };
 
-export const RefreshToken = mongoose.model<RefreshTokenDocument, IRefreshTokenModel>('RefreshToken', refreshTokenSchema);
+export const RefreshToken = mongoose.model<RefreshTokenDocument, IRefreshTokenModel>('RefreshToken', RefreshTokenSchema);
