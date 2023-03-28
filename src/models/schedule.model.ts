@@ -9,9 +9,9 @@ const ScheduleSchema: Schema = new Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Course',
-      required: true
-    }
-  ]
+      required: true,
+    },
+  ],
 });
 
 export default mongoose.model<ISchedule>('Schedule', ScheduleSchema);

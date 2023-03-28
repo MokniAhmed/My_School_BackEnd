@@ -6,8 +6,8 @@ const CourseType: GraphQLObjectType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLString },
     name: { type: GraphQLString },
-    professeursId: { type: UserType }
-  })
+    professeursId: { type: UserType },
+  }),
 });
 
 export default CourseType;

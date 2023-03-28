@@ -14,11 +14,7 @@ const delay = (ms: number) =>
 
 const dropped: string[] = [];
 
-async function generateDocs(
-  documents: any[],
-  model: Model<any>,
-  counter?: number,
-) {
+async function generateDocs(documents: any[], model: Model<any>, counter?: number) {
   try {
     if (!dropped.find((name) => name === model.collection.name)) {
       await model.collection.drop();

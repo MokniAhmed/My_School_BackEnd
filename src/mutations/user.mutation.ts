@@ -1,10 +1,10 @@
-import apiWrapper from "crud/apiWrapper";
-import remove from "crud/remove";
-import update from "crud/update";
-import { GraphQLError, GraphQLFloat, GraphQLInt, GraphQLString } from "graphql";
-import { GraphQLDate } from "graphql-scalars";
-import { User } from "models/user.model";
-import { UserType, UserInputType } from "types/user.type";
+import apiWrapper from 'crud/apiWrapper';
+import remove from 'crud/remove';
+import update from 'crud/update';
+import { GraphQLError, GraphQLFloat, GraphQLInt, GraphQLString } from 'graphql';
+import { GraphQLDate } from 'graphql-scalars';
+import { User } from 'models/user.model';
+import { UserType, UserInputType } from 'types/user.type';
 
 export default {
   deleteUser: apiWrapper(
@@ -16,12 +16,12 @@ export default {
         return new GraphQLError("User does't exist");
       }
 
-      return "User has been deleted successfuly";
+      return 'User has been deleted successfuly';
     },
     GraphQLString,
     {
       email: { type: GraphQLString, require: true },
-    }
+    },
   ),
   deleteUserById: remove(User, {}),
 
@@ -46,6 +46,6 @@ export default {
       diploma: GraphQLString,
     },
     UserType,
-    {}
+    {},
   ),
 };

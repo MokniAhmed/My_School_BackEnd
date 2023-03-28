@@ -14,8 +14,8 @@ const ClassType: GraphQLObjectType = new GraphQLObjectType({
     schedulesId: { type: GraphQLString },
     schedule: {
       type: ScheduleType,
-    }
-  })
+    },
+  }),
 });
 
 export default ClassType;

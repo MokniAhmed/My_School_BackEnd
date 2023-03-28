@@ -7,9 +7,9 @@ const ScheduleType: GraphQLObjectType = new GraphQLObjectType({
     id: { type: GraphQLString },
     coursesIds: { type: new GraphQLList(GraphQLString) },
     courses: {
-      type: new GraphQLList(CourseType)
-    }
-  })
+      type: new GraphQLList(CourseType),
+    },
+  }),
 });
 
 export default ScheduleType;

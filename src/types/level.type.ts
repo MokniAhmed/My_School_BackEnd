@@ -9,8 +9,8 @@ const LevelType: GraphQLObjectType = new GraphQLObjectType({
     cours: { type: new GraphQLList(GraphQLString) },
     classes: {
       type: new GraphQLList(ClassType),
-    }
-  })
+    },
+  }),
 });
 
-export default LevelType
+export default LevelType;

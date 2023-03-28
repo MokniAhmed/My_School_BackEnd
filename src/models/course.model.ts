@@ -8,13 +8,13 @@ export interface ICourse extends Document {
 const CourseSchema: Schema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   professeursId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "User",
-  }
+    ref: 'User',
+  },
 });
 
 export default mongoose.model<ICourse>('Course', CourseSchema);

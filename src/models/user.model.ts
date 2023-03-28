@@ -1,20 +1,20 @@
-import mongoose, { CallbackError, Document, Model, Schema } from "mongoose";
+import mongoose, { CallbackError, Document, Model, Schema } from 'mongoose';
 
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import moment from "moment";
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import moment from 'moment';
 
-import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 //@ts-ignore
-import multer from "multer";
+import multer from 'multer';
 
-import { env, expirationInterval, accessSecret } from "config/vars";
+import { env, expirationInterval, accessSecret } from 'config/vars';
 
 export enum Role {
-  PROF = "professor",
-  STUDENT = "student",
-  ADMIN = "admin",
+  PROF = 'professor',
+  STUDENT = 'student',
+  ADMIN = 'admin',
 }
 
 export const roles = [Role.PROF, Role.STUDENT, Role.ADMIN];
@@ -86,17 +86,17 @@ const UserSchema = new mongoose.Schema<UserDocument, UserModel>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export async function hash(password: string) {
-  const rounds = env === "test" ? 1 : 10;
+  const rounds = env === 'test' ? 1 : 10;
   return await bcrypt.hash(password, rounds);
 }
 
-UserSchema.pre("save", async function (next) {
+UserSchema.pre('save', async function (next) {
   try {
-    if (!this.isModified("password")) return next();
+    if (!this.isModified('password')) return next();
     this.password = await hash(this.password);
     next();
   } catch (e: unknown) {
@@ -112,7 +112,7 @@ UserSchema.methods.generateToken = function () {
   const payload = {
     sub: this._id,
   };
-  const expiresIn = moment().add(expirationInterval, "minutes");
+  const expiresIn = moment().add(expirationInterval, 'minutes');
 
   const token = jwt.sign(payload, accessSecret, {
     expiresIn: expiresIn.unix(),
@@ -129,7 +129,7 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
-  folder: "user-images",
+  folder: 'user-images',
 });
 
 const cloudinaryStorage = new CloudinaryStorage({
@@ -150,15 +150,6 @@ UserSchema.methods.uploadImage = async function (file: Express.Multer.File) {
   await this.save();
 };
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model('User', UserSchema);
 
-export {
-  IBaseUser,
-  IBaseUserData,
-  IStudent,
-  IProfessor,
-  IStudentData,
-  IProfessorData,
-  User,
-  UserImageUploader,
-};
+export { IBaseUser, IBaseUserData, IStudent, IProfessor, IStudentData, IProfessorData, User, UserImageUploader };

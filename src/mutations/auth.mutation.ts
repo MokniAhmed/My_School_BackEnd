@@ -7,14 +7,13 @@ import { AuthType } from 'types/auth.type';
 import { generateTokenResponse, getAgent } from 'utils/authHelpers';
 import { GraphQLDate } from 'graphql-scalars';
 import { createBaseUser, createProfessor, createStudent } from 'services/user.service';
-import { UserType } from "types/user.type";
+import { UserType } from 'types/user.type';
 
 export default {
   login: apiWrapper(
     async (args, req) => {
       const user = await User.findOne({ email: args.email });
-      if (!user || !(await user.passwordMatches(args.password)))
-        throw new GraphQLError("Invalid credentials");
+      if (!user || !(await user.passwordMatches(args.password))) throw new GraphQLError('Invalid credentials');
 
       const token = await generateTokenResponse(user, req);
 
@@ -25,7 +24,7 @@ export default {
       email: { type: new GraphQLNonNull(GraphQLString) },
       password: { type: new GraphQLNonNull(GraphQLString) },
     },
-    {}
+    {},
   ),
   register: apiWrapper(
     async (args, req) => {
@@ -50,14 +49,14 @@ export default {
       let user: UserDocument = new User();
 
       if (!roles.includes(role)) {
-        throw new GraphQLError("This role is invalid");
+        throw new GraphQLError('This role is invalid');
       }
 
       const baseUser = createBaseUser({
         role,
         firstName,
         lastName,
-        password: "",
+        password: '',
         telephone,
         birthday,
         address,
@@ -82,7 +81,7 @@ export default {
         });
       }
 
-      return  user ;
+      return user;
     },
     UserType,
     {
@@ -103,7 +102,7 @@ export default {
       hourlyPrice: { type: GraphQLFloat, required: false },
       hoursNbr: { type: GraphQLInt, required: false },
       diploma: { type: GraphQLString, required: false },
-    }
+    },
   ),
   refresh: apiWrapper(
     async (args, req) => {
@@ -111,9 +110,9 @@ export default {
         token: args.refreshToken,
       });
 
-      if (!refreshToken) throw new GraphQLError("Invalid token");
+      if (!refreshToken) throw new GraphQLError('Invalid token');
       const user = await User.findOne({ _id: refreshToken.user });
-      if (!user) throw new GraphQLError("Invalid token");
+      if (!user) throw new GraphQLError('Invalid token');
       const token = await generateTokenResponse(user, req);
       return { user, token };
     },
@@ -121,7 +120,7 @@ export default {
     {
       refreshToken: { type: new GraphQLNonNull(GraphQLString) },
     },
-    {}
+    {},
   ),
   logout: apiWrapper(
     async (args, req) => {
@@ -130,9 +129,9 @@ export default {
       if (user) {
         await RefreshToken.deleteOne({ userId: user.id, agent });
       }
-      return "done";
+      return 'done';
     },
     GraphQLString,
-    {}
+    {},
   ),
 };

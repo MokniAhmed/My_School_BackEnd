@@ -9,20 +9,20 @@ export interface IClass extends Document {
 const ClassSchema: Schema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   studentsIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Student',
       required: true,
-    }
+    },
   ],
   schedulesId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Schedule',
-    required: true
-  }
+    required: true,
+  },
 });
 
 export default mongoose.model<IClass>('Class', ClassSchema);

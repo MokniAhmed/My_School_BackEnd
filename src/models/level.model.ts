@@ -9,20 +9,20 @@ export interface ILevel extends Document {
 const LevelSchema: Schema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   cours: [
     {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   ],
   classes: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Class',
-      required: true
-    }
-  ]
+      required: true,
+    },
+  ],
 });
 export default mongoose.model<ILevel>('Level', LevelSchema);

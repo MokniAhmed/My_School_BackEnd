@@ -12,19 +12,13 @@ export interface RefreshToken {
   agent: string;
 }
 
-export interface RefreshTokenDocument extends Document, RefreshToken { }
+export interface RefreshTokenDocument extends Document, RefreshToken {}
 
 export interface IRefreshTokenModel extends Model<RefreshTokenDocument> {
-  generate: (
-    user: UserDocument,
-    agent: string,
-  ) => Promise<RefreshTokenDocument>;
+  generate: (user: UserDocument, agent: string) => Promise<RefreshTokenDocument>;
 }
 
-const RefreshTokenSchema = new mongoose.Schema<
-  RefreshTokenDocument,
-  IRefreshTokenModel
->({
+const RefreshTokenSchema = new mongoose.Schema<RefreshTokenDocument, IRefreshTokenModel>({
   token: {
     type: String,
     required: true,
@@ -58,4 +52,7 @@ RefreshTokenSchema.statics = {
   },
 };
 
-export const RefreshToken = mongoose.model<RefreshTokenDocument, IRefreshTokenModel>('RefreshToken', RefreshTokenSchema);
+export const RefreshToken = mongoose.model<RefreshTokenDocument, IRefreshTokenModel>(
+  'RefreshToken',
+  RefreshTokenSchema,
+);
