@@ -1,4 +1,5 @@
 import { GraphQLObjectType, GraphQLList, GraphQLString } from 'graphql';
+import CourseType from './course.type';
 import ScheduleType from './schedule.type';
 import { UserType } from './user.type';
 
@@ -14,6 +15,12 @@ const ClassType: GraphQLObjectType = new GraphQLObjectType({
     schedulesId: { type: GraphQLString },
     schedule: {
       type: ScheduleType,
+    },
+    courses: {
+      type: new GraphQLList(CourseType),
+    },
+    coursesId: {
+      type: new GraphQLList(GraphQLString),
     },
   }),
 });
