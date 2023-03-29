@@ -21,7 +21,7 @@ const LevelSchema: Schema = new Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Class',
-      required: true,
+      required: false,
     },
   ],
 });
