@@ -45,7 +45,39 @@ export default {
     {},
   ),
 
-  deleteLevelById: remove(classModel, {}),
+  deleteClass: apiWrapper(
+    async (args, req) => {
+      const { id } = args;
+      let level = await levelModel.findOneAndUpdate(
+        { classes: id },
+        {
+          $pull: { classes: id },
+        },
+      );
+
+      if (level) {
+        let classe = await classModel.findByIdAndDelete({ _id: id });
+        if (classe) {
+          let listCours = classe.courses;
+
+          await Promise.all(
+            listCours.map(async (id) => {
+              await courseModel.findByIdAndDelete({ _id: id });
+            }),
+          );
+        }
+      }
+      return 'deleted';
+    },
+    GraphQLString,
+    {
+      id: { type: GraphQLID, required: true },
+    },
+
+    {},
+  ),
+
+  // deleteLevelById: remove(classModel, {}),
 
   // modifyLevel: update(
   //   levelModel,
