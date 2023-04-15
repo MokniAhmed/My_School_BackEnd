@@ -9,7 +9,7 @@ const ScheduleSchema: Schema = new Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Course',
-      required: true,
+      required: false,
     },
   ],
 });
