@@ -15,7 +15,7 @@ const ClassSchema: Schema = new Schema({
   studentsIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Student',
+      ref: 'User',
       required: false,
     },
   ],
