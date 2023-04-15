@@ -8,11 +8,11 @@ const ClassType: GraphQLObjectType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLString },
     name: { type: GraphQLString },
-    studentsIds: { type: new GraphQLList(GraphQLString) },
+    studentsIds: { type: new GraphQLList(UserType) },
     students: {
       type: new GraphQLList(UserType),
     },
-    schedulesId: { type: GraphQLString },
+    schedulesId: { type: ScheduleType },
     schedule: {
       type: ScheduleType,
     },

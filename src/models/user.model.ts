@@ -48,6 +48,7 @@ interface IProfessorData {
   hourlyPrice: number;
   hoursNbr: number;
   diploma: string;
+  available: string;
 }
 
 interface IProfessor extends IBaseUser, IProfessorData {}
@@ -82,6 +83,7 @@ const UserSchema = new mongoose.Schema<UserDocument, UserModel>(
     hourlyPrice: { type: Number, default: null },
     hoursNbr: { type: Number, default: null },
     diploma: { type: String, default: null },
+    available: { type: String, default: '000000000000000000000000' },
     image: { type: String, default: null },
   },
   {

@@ -1,4 +1,4 @@
-import { GraphQLError, GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLError, GraphQLFloat, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString } from 'graphql';
 
 import apiWrapper from 'crud/apiWrapper';
 import { User, roles, Role, UserDocument } from 'models/user.model';
@@ -8,6 +8,7 @@ import { generateTokenResponse, getAgent } from 'utils/authHelpers';
 import { GraphQLDate } from 'graphql-scalars';
 import { createBaseUser, createProfessor, createStudent } from 'services/user.service';
 import { UserType } from 'types/user.type';
+import classModel from 'models/class.model';
 
 export default {
   login: apiWrapper(
@@ -45,6 +46,7 @@ export default {
         hourlyPrice,
         hoursNbr,
         emailPer,
+        classId,
       } = args;
       let user: UserDocument = new User();
 
@@ -72,12 +74,21 @@ export default {
           fatherJob,
           motherJob,
         });
+        if (classId) {
+          await classModel.findByIdAndUpdate(
+            { _id: classId },
+            {
+              $addToSet: { studentsIds: user.id },
+            },
+          );
+        }
       }
       if (role === Role.PROF) {
         user = await createProfessor(baseUser, {
           diploma,
           hourlyPrice,
           hoursNbr,
+          available: '000000000000000000000000',
         });
       }
 
@@ -102,6 +113,7 @@ export default {
       hourlyPrice: { type: GraphQLFloat, required: false },
       hoursNbr: { type: GraphQLInt, required: false },
       diploma: { type: GraphQLString, required: false },
+      classId: { type: GraphQLID, required: false },
     },
   ),
   refresh: apiWrapper(

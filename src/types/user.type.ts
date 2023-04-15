@@ -39,6 +39,7 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     motherFullName: { type: GraphQLString },
     fatherJob: { type: GraphQLString },
     motherJob: { type: GraphQLString },
+    available: { type: GraphQLString },
     hourlyPrice: { type: GraphQLFloat },
     hoursNbr: { type: GraphQLInt },
     diploma: { type: GraphQLString },
