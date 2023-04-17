@@ -14,6 +14,8 @@ export default {
   login: apiWrapper(
     async (args, req) => {
       const user = await User.findOne({ email: args.email });
+      console.log(user);
+      
       if (!user || !(await user.passwordMatches(args.password))) throw new GraphQLError('Invalid credentials');
 
       const token = await generateTokenResponse(user, req);

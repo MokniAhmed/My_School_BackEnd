@@ -18,8 +18,31 @@ export default {
     async (args, req) => {
       const { coursesIds, classId } = args;
 
-      const schedule = new scheduleModel({ coursesIds });
-      console.log(schedule);
+      var schedule = new scheduleModel({ coursesIds });
+
+      await Promise.all(
+        coursesIds.map(async (courseId: string) => {
+          let course = await courseModel.findById({ _id: courseId });
+
+          if (course) {
+            if (course?.name != 'vide') {
+              let prof = await User.findById({ _id: course?.professeursId });
+              let avaible = prof?.available;
+              console.log(avaible);
+              console.log(coursesIds.indexOf(courseId));
+              let newx = '';
+              for (let index = 0; index < coursesIds!.length; index++) {
+                if (coursesIds![index] == courseId) newx = newx + '1';
+                else newx = newx + avaible![index];
+              }
+
+              prof!.available = newx;
+
+              await prof?.save();
+            }
+          }
+        }),
+      );
 
       await classModel.findByIdAndUpdate(
         { _id: classId },
@@ -27,29 +50,7 @@ export default {
           schedulesId: schedule._id,
         },
       );
-      await Promise.all(
-        coursesIds.map(async (courseId: string) => {
-          let course = await courseModel.findById({ _id: courseId });
-
-          if (course?.name != 'vide') {
-            let prof = await User.findById({ _id: course?.professeursId });
-            let avaible = prof?.available;
-            console.log(avaible);
-            console.log(coursesIds.indexOf(courseId));
-            let newx = '';
-            for (let index = 0; index < coursesIds!.length; index++) {
-              if (coursesIds![index] == courseId) newx = newx + '1';
-              else newx = newx + avaible![index];
-            }
-
-            prof!.available = newx;
-
-            await prof?.save();
-          }
-        }),
-      );
-
-      return schedule.save();
+      await schedule.save();
     },
     ScheduleType,
     {

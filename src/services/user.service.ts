@@ -5,7 +5,7 @@ const emailGenerator = (firstName: string, lastName: string, role: Role, telepho
   let fullName = `${firstName}${lastName}`;
   let phone = `${telephone.slice(6)}`;
   let email = `${fullName}${phone}${emailBase}`;
-  password = `${lastName}@${telephone}`;
+  password = `${fullName}${phone}`;
 
   // const emailExists = await User.findOne({ email });
   // if (emailExists) {
