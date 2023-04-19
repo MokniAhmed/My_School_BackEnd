@@ -1,30 +1,42 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface INotes extends Document {
-  course: string;
-  professeur: string;
-  student: string;
-
-  // classes: mongoose.Types.ObjectId[];
+  course: mongoose.Types.ObjectId;
+  professeur: mongoose.Types.ObjectId;
+  student: mongoose.Types.ObjectId;
+  classe: mongoose.Types.ObjectId;
+  note1?: number;
+  note2?: number;
 }
 
 const NotesSchema: Schema = new Schema({
-  name: {
-    type: String,
+  course: {
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: 'Course',
   },
-  cours: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
-  classes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Class',
-      required: false,
-    },
-  ],
+  classe: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Class',
+  },
+  professeur: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User',
+  },
+  student: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User',
+  },
+  note1: {
+    type: Number,
+    required: false,
+  },
+  note2: {
+    type: Number,
+    required: false,
+  },
 });
-export default mongoose.model<INotes>('Level', NotesSchema);
+export default mongoose.model<INotes>('Note', NotesSchema);
