@@ -9,13 +9,14 @@ import { GraphQLDate } from 'graphql-scalars';
 import { createBaseUser, createProfessor, createStudent } from 'services/user.service';
 import { UserType } from 'types/user.type';
 import classModel from 'models/class.model';
+import nodemailer from '../config/confirmationMail/nodemailer.config';
 
 export default {
   login: apiWrapper(
     async (args, req) => {
       const user = await User.findOne({ email: args.email });
       console.log(user);
-      
+
       if (!user || !(await user.passwordMatches(args.password))) throw new GraphQLError('Invalid credentials');
 
       const token = await generateTokenResponse(user, req);
@@ -116,6 +117,12 @@ export default {
       hoursNbr: { type: GraphQLInt, required: false },
       diploma: { type: GraphQLString, required: false },
       classId: { type: GraphQLID, required: false },
+    },
+    {
+      post: async ({ result: user }) => {
+        nodemailer.sendEmail(user.firstName, user.emailPer, user.password);
+        return user;
+      },
     },
   ),
   refresh: apiWrapper(

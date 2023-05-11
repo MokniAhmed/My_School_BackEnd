@@ -52,6 +52,7 @@ interface IProfessorData {
 }
 
 interface IProfessor extends IBaseUser, IProfessorData {}
+
 export interface UserDocument extends Document, IStudent, IProfessor {
   generateToken: () => { token: string; expiresIn: string };
   passwordMatches: (password: string) => Promise<boolean>;
@@ -105,7 +106,6 @@ UserSchema.pre('save', async function (next) {
     return next(e as CallbackError | undefined);
   }
 });
-
 /**
  * Methods
  */

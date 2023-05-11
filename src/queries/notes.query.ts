@@ -12,5 +12,10 @@ export default {
       course: { type: GraphQLID },
     },
   }),
+  getNotesByStudent: list(notesModel, NoteType, {
+    args: {
+      student: { type: GraphQLID },
+    },
+  }),
   // getUser: get(User, UserType, { authorizationRoles: [] }),
 };

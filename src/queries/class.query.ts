@@ -73,4 +73,12 @@ export default {
     },
     {},
   ),
+  getClassStudent: apiWrapper(
+    async (args) => {
+      const { id } = args;
+      return await classModel.findOne({ studentsIds: id });
+    },
+    ClassType,
+    { id: { type: GraphQLID, required: false } },
+  ),
 };
