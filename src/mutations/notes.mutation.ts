@@ -16,8 +16,13 @@ export default {
     async (args, req) => {
       const { course, professeur } = args;
       let classe = await classModel.findOne({ courses: course });
+      console.log(classe);
+
       if (classe) {
         let liststudent = classe.studentsIds;
+        if (liststudent.length == 0) {
+          return '0eleve';
+        }
         await Promise.all(
           liststudent.map(async (id) => {
             let note = new notesModel({ classe, professeur, course, student: id });
