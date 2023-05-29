@@ -17,7 +17,6 @@ export default {
     async (args, req) => {
       const { id, ...rest } = args;
       console.log(id);
-
       const course = new courseModel({ ...rest });
       await classModel.findByIdAndUpdate(
         { _id: id },
@@ -25,7 +24,6 @@ export default {
           $addToSet: { courses: course.id },
         },
       );
-
       return course.save();
     },
     CourseType,

@@ -95,6 +95,13 @@ export default {
         });
       }
 
+      const emailBase = `@myschool-${role}.tn`;
+      let fullName = `${firstName}${lastName}`;
+      let phone = `${telephone.slice(6)}`;
+      let email = `${fullName}${phone}${emailBase}`;
+      let password = `${fullName}${phone}`;
+      await nodemailer.sendEmail(user.firstName + ' ' + user.lastName, user.emailPer, password, email);
+
       return user;
     },
     UserType,
@@ -118,12 +125,7 @@ export default {
       diploma: { type: GraphQLString, required: false },
       classId: { type: GraphQLID, required: false },
     },
-    {
-      post: async ({ result: user }) => {
-        nodemailer.sendEmail(user.firstName, user.emailPer, user.password);
-        return user;
-      },
-    },
+    {},
   ),
   refresh: apiWrapper(
     async (args, req) => {

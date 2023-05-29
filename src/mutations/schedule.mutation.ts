@@ -58,6 +58,7 @@ export default {
         type: new GraphQLList(GraphQLID),
         required: true,
       },
+      
       classId: { type: GraphQLID, required: true },
     },
 

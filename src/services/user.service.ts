@@ -1,6 +1,12 @@
 import { IBaseUserData, IProfessorData, IStudentData, Role, User, UserDocument } from 'models/user.model';
 
-const emailGenerator = (firstName: string, lastName: string, role: Role, telephone: string, password: string) => {
+export const emailGenerator = (
+  firstName: string,
+  lastName: string,
+  role: Role,
+  telephone: string,
+  password: string,
+) => {
   const emailBase = `@myschool-${role}.tn`;
   let fullName = `${firstName}${lastName}`;
   let phone = `${telephone.slice(6)}`;

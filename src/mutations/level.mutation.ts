@@ -21,7 +21,6 @@ export default {
         required: false,
       },
     },
-
     LevelType,
     {},
   ),
